@@ -5,51 +5,44 @@ import App from 'next/app'
 import { createMuiTheme } from '@material-ui/core/styles'
 import { ThemeProvider } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import { Provider } from 'react-redux'
+import { useStore } from '../store/store.js'
 
-export default class MyApp extends App {
-	static async getInitialProps({ Component, ctx }) {
-		return {
-			pageProps: {
-				// Call page-level getInitialProps
-				...(Component.getInitialProps
-					? await Component.getInitialProps(ctx)
-					: {}),
-			},
-		}
-	}
+import { useState, useEffect } from 'react'
 
-	componentDidMount() {
+export default function MyApp({ Component, pageProps }) {
+	useEffect(() => {
 		if (process.env.NODE_ENV !== 'production') {
 			const axe = require('react-axe')
 			axe(React, ReactDOM, 1000)
 		}
-	}
+	})
 
-	render() {
-		const { Component, pageProps } = this.props
+	const store = useStore(pageProps.initialReduxState)
 
-		const theme = createMuiTheme({
-			palette: {
-				background: {
-					default: '#EEE',
-				},
-				primary: {
-					main: '#673ab7',
-				},
+	const theme = createMuiTheme({
+		palette: {
+			background: {
+				default: '#EEE',
 			},
-		})
+			primary: {
+				main: '#673ab7',
+			},
+		},
+	})
 
-		return (
-			<>
+	return (
+		<>
+			<Provider store={store}>
 				<Head>
-					<title>Todo App</title>
+					<title>Daily Harvest Take home test</title>
 				</Head>
 				<ThemeProvider theme={theme}>
 					<CssBaseline>
-							<Component {...pageProps} />
+						<Component {...pageProps} />
 					</CssBaseline>
 				</ThemeProvider>
-			</>
-		)
-	}
+			</Provider>
+		</>
+	)
 }
