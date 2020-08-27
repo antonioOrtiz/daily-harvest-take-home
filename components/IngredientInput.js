@@ -3,19 +3,19 @@ import Alert from '@material-ui/lab/Alert'
 
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
+import { Button } from '@material-ui/core'
 
 import { makeStyles } from '@material-ui/core/styles'
 import { useDispatch } from 'react-redux'
 
 var useStyles = makeStyles((theme) => ({
-	root: {
-		'& > *': {
-			margin: theme.spacing(1),
-			width: '25ch',
-		},
-		submit: {
-			color: 'red',
-		},
+	input: {
+		margin: theme.spacing(1),
+		height: 38,
+	},
+	alert: {
+		width: 'fit-content',
+		margin: 'auto',
 	},
 }))
 
@@ -34,7 +34,7 @@ var IngredientInput = ({ indgredients }) => {
 	function CheckIngredients(input) {
 		setWastAPICallMade(true)
 
-		console.log('indgredients ', indgredients)
+		// console.log('indgredients ', indgredients)
 		var foo = indgredients.filter((e) => e.name === input)
 
 		if (indgredients.filter((e) => e.name === input).length > 0) {
@@ -69,31 +69,45 @@ var IngredientInput = ({ indgredients }) => {
 
 	return (
 		<>
-			<Grid container justify="center">
-				<form onSubmit={handleSubmit} className={classes.root}>
-					<TextField
-						value={text}
-						onChange={handleTextChange}
-						id="outlined-basic"
-						label="Outlined"
-						variant="outlined"
-					/>
-					<button type="submit" className={classes.submit}>
-						{' '}
-						Check Ingredient{' '}
-					</button>
-				</form>
-				{wasAPICallMade ? (
-					isInAPI ? (
-						<Alert severity="success">
-							{`We have found ${text}('s) in your search, below we'll load the products which contain them!`}
-						</Alert>
-					) : (
-						<Alert severity="error">
-							{`We couldn't find that item in your search.`}
-						</Alert>
-					)
-				) : null}
+			<Grid container>
+				<Grid item xs={12} align="center">
+					<form onSubmit={handleSubmit} className={classes.root}>
+						<br />
+
+						<TextField
+							InputProps={{
+								className: classes.input,
+							}}
+							value={text}
+							onChange={handleTextChange}
+							id="outlined-basic"
+							label="Outlined"
+							variant="outlined"
+						/>
+						<Button
+							variant="contained"
+							color="primary"
+							type="submit"
+							className={classes.input}
+						>
+							{' '}
+							Check Ingredient{' '}
+						</Button>
+					</form>
+				</Grid>
+				<Grid item xs={12}>
+					{wasAPICallMade ? (
+						isInAPI ? (
+							<Alert className={classes.alert} severity="success">
+								{`We have found ${text}('s) in your search, below we'll load the products which contain them!`}{' '}
+							</Alert>
+						) : (
+							<Alert className={classes.alert} severity="error">
+								{`We couldn't find that item in your search.`}
+							</Alert>
+						)
+					) : null}
+				</Grid>
 			</Grid>
 		</>
 	)

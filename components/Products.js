@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Grid from '@material-ui/core/Grid'
-import { CircularProgress } from '@material-ui/core'
+import Card from '@material-ui/core/Card'
+import CardHeader from '@material-ui/core/CardHeader'
+import CardMedia from '@material-ui/core/CardMedia'
 
 import { useSelector } from 'react-redux'
 
@@ -10,9 +12,8 @@ var Products = ({ products }) => {
 	var [products, setProducts] = useState(products)
 
 	var [loader, setLoader] = useState(null)
-	var { productContainsIngredientFromSearch, searchTerm } = queryData()
-
-	console.log('products ', products)
+	var [productsFromSearch, setProductsFromSearch] = useState([])
+	var { productContainsIngredientFromSearch, searchTerm, id } = queryData()
 
 	function queryData() {
 		return useSelector((state) => ({
@@ -24,31 +25,63 @@ var Products = ({ products }) => {
 	}
 
 	function displayProductsfromQuery() {
-		// if (productContainsIngredientFromSearch) {
-		// 	products.filter()
-		// }
+		console.log(
+			'productContainsIngredientFromSearch ',
+			productContainsIngredientFromSearch
+		)
+		if (productContainsIngredientFromSearch) {
+			products.filter((obj) => {
+				obj.ingredientIds.filter((item) => {
+					if (item === id) {
+						setProductsFromSearch((productsFromSearch) => [
+							...productsFromSearch,
+							obj,
+						])
+					}
+				})
+			})
+		} else {
+			console.log('not found')
+		}
 	}
 
-	displayProductsfromQuery()
+	useEffect(() => {
+		displayProductsfromQuery()
+	}, [productContainsIngredientFromSearch]) // This is be executed when "isinApi" or "wasAPICallMade" state changes
 
 	var useStyles = makeStyles((theme) => ({
 		root: {
-			'& > *': {
-				margin: theme.spacing(1),
-				width: '25ch',
-			},
-			submit: {
-				color: 'red',
-			},
+			margin: theme.spacing(1),
+			maxWidth: 345,
+		},
+		submit: {
+			color: 'red',
+		},
+		media: {
+			height: 0,
+
+			paddingTop: '56.25%', // 16:9
 		},
 	}))
 	var classes = useStyles()
+	console.log(`productsFromSearch in useEffect `, productsFromSearch)
 
 	return (
 		<>
 			<Grid container justify="center">
-				<h1>Products</h1>
-				{loader}
+				{productContainsIngredientFromSearch &&
+					productsFromSearch.map((product) => {
+						console.log('product.image.url ', product.image.url)
+						return (
+							<Card className={classes.root}>
+								<CardHeader title={product.name} />
+								<CardMedia
+									className={classes.media}
+									image={product.image.url}
+								/>
+							</Card>
+						)
+					})}
 			</Grid>
 		</>
 	)
